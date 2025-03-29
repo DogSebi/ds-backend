@@ -16,9 +16,9 @@ class PlateReaderServerClient:
             response.raise_for_status()
             image = io.BytesIO(response.content)
             return image
-        except requests.exceptions.HTTPError:
-            raise RuntimeError(f'client error, status code {response.status_code}')
         except requests.exceptions.RequestException:
+            if 400 <= response.status_code < 500:
+                raise RuntimeError(f'client error, status code {response.status_code}')
             raise RuntimeError(f'server error, status code {response.status_code}')
     
     def get_car_number(self, image_ids):
